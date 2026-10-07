@@ -1,0 +1,95 @@
+def dfs(s, g, d, path, moves, seen, nodes):
+   
+    nodes[d] += 1
+
+    if s == g:
+        return path, moves
+
+    if d == 0:
+        return None
+
+    z = s.index(0)
+    r = z // 3
+    c = z % 3
+
+    a = []
+
+    if r > 0:
+        a.append((z - 3, "Up"))
+    if r < 2:
+        a.append((z + 3, "Down"))
+    if c > 0:
+        a.append((z - 1, "Left"))
+    if c < 2:
+        a.append((z + 1, "Right"))
+
+    for x, m in a:
+        t = list(s)
+        t[z], t[x] = t[x], t[z]
+        t = tuple(t)
+
+        if t not in seen:
+            q = dfs(
+                t,
+                g,
+                d - 1,
+                path + [t],
+                moves + [m],
+                seen | {t},
+                nodes
+            )
+
+            if q:
+                return q
+
+    return None
+
+
+def iddfs(s, g):
+    for d in range(6):
+        nodes = [0] * (d + 1)
+
+        q = dfs(s, g, d, [s], [], {s}, nodes)
+
+        print("Depth limit:", d)
+        print("Nodes explored:", sum(nodes))
+
+        for i in range(len(nodes)):
+           
+            depth = d - i
+            print("  Depth", depth, ":", nodes[i], "nodes")
+
+        print()
+
+        if q:
+            return q
+
+
+s = (1, 2, 3,
+     4, 0, 6,
+     7, 5, 8)
+
+g = (1, 2, 3,
+     4, 5, 6,
+     7, 8, 0)
+
+q = iddfs(s, g)
+
+if q:
+    p, m = q
+
+    print("Total Steps:", len(m))
+    print()
+
+    for i in range(len(p)):
+        print("Step", i)
+
+        if i > 0:
+            print("Move:", m[i - 1])
+
+        print(p[i][0], p[i][1], p[i][2])
+        print(p[i][3], p[i][4], p[i][5])
+        print(p[i][6], p[i][7], p[i][8])
+        print()
+
+
