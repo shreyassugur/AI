@@ -1,0 +1,77 @@
+ 
+import random
+
+N = 4
+
+def heuristic(state):
+    conflicts = 0
+
+    for i in range(N):
+        for j in range(i + 1, N):
+            if state[i] == state[j] or abs(state[i] - state[j]) == abs(i - j):
+                conflicts += 1
+
+    return conflicts
+
+
+def print_board(state):
+    for row in range(N):
+        for col in range(N):
+            if state[col] == row:
+                print("Q", end=" ")
+            else:
+                print(".", end=" ")
+        print()
+    print("Heuristic =", heuristic(state))
+
+
+def hill_climbing():
+    state = [random.randint(0, N - 1) for _ in range(N)]
+    step = 1
+    restart = 0
+
+    print("INITIAL STATE")
+    print_board(state)
+
+    while True:
+        current_h = heuristic(state)
+
+        if current_h == 0:
+            print("SOLUTION FOUND!")
+            return state
+
+        best_state = state[:]
+        best_h = current_h
+
+        for col in range(N):
+            for row in range(N):
+                if state[col] != row:
+                    neighbor = state[:]
+                    neighbor[col] = row
+                    h = heuristic(neighbor)
+
+                    if h < best_h:
+                        best_h = h
+                        best_state = neighbor[:]
+
+        if best_h >= current_h:
+            restart += 1
+            print(f"RESTART {restart}")
+
+            state = [random.randint(0, N - 1) for _ in range(N)]
+
+            print("New Random State:")
+            print_board(state)
+        else:
+            state = best_state
+
+        print(f"STEP {step}")
+        print_board(state)
+
+        step += 1
+
+
+solution = hill_climbing()
+
+print("FINAL SOLUTION")
+print_board(solution)
