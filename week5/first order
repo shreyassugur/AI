@@ -1,0 +1,169 @@
+facts = [
+    ("Student", "Rahul"),
+    ("Student", "Priya"),
+    ("Student", "Aman"),
+
+    ("Attendance", "Rahul", 85),
+    ("Attendance", "Priya", 60),
+    ("Attendance", "Aman", 90)
+]
+
+
+# STEP 2: RULES
+
+def rule1(fact_list):
+    """
+    Rule:
+    Student(x) AND Attendance(x,a)
+    AND a >= 75 -> Eligible(x)
+    """
+
+    new_facts = []
+
+    students = [
+        f[1] for f in fact_list
+        if f[0] == "Student"
+    ]
+
+    for person in students:
+
+        for f in fact_list:
+
+            if f[0] == "Attendance" and f[1] == person:
+
+                attendance = f[2]
+
+                if attendance >= 75:
+
+                    result = ("Eligible", person)
+
+                    if result not in fact_list:
+                        new_facts.append(result)
+
+    return new_facts
+
+
+def rule2(fact_list):
+    """
+    Rule:
+    Eligible(x) -> CanWriteExam(x)
+    """
+
+    new_facts = []
+
+    for f in fact_list:
+
+        if f[0] == "Eligible":
+
+            result = ("CanWriteExam", f[1])
+
+            if result not in fact_list:
+                new_facts.append(result)
+
+    return new_facts
+
+
+# STEP 3: FORWARD CHAINING
+
+def forward_chaining():
+
+    print("\nINITIAL KNOWLEDGE BASE")
+    print("------------------------------")
+
+    for fact in facts:
+        print(fact)
+
+    iteration = 1
+
+    while True:
+
+        print("\nIteration:", iteration)
+
+        new_facts = []
+
+        new_facts.extend(rule1(facts))
+        new_facts.extend(rule2(facts))
+
+        if not new_facts:
+            print("No new facts found.")
+            break
+
+        for fact in new_facts:
+
+            facts.append(fact)
+
+            print("Derived:", fact)
+
+        iteration += 1
+
+    print("\nFINAL KNOWLEDGE BASE")
+    print("------------------------------")
+
+    for fact in facts:
+        print(fact)
+
+
+# STEP 4: QUERY SYSTEM
+
+def ask_query(predicate, person):
+
+    query = (predicate, person)
+
+    print("\nQUERY:", query)
+
+    if query in facts:
+
+        print("RESULT: TRUE")
+
+        if predicate == "Eligible":
+            print(person, "is eligible for the exam.")
+
+        elif predicate == "CanWriteExam":
+            print(person, "can write the exam.")
+
+        elif predicate == "Student":
+            print(person, "is a student.")
+
+    else:
+
+        print("RESULT: FALSE")
+        print("The query cannot be proved from the knowledge base.")
+
+
+# STEP 5: MAIN PROGRAM
+
+print("FIRST ORDER LOGIC KNOWLEDGE SYSTEM")
+print("===================================")
+
+# Run inference engine
+forward_chaining()
+
+# User queries
+while True:
+
+    print("\nAVAILABLE QUERIES")
+    print("1. Is student eligible?")
+    print("2. Can student write exam?")
+    print("3. Is person a student?")
+    print("4. Exit")
+
+    choice = input("\nEnter choice: ")
+
+    if choice == "4":
+        print("Exiting system...")
+        break
+
+    person = input("Enter student name: ").strip().title()
+
+    if choice == "1":
+        ask_query("Eligible", person)
+
+    elif choice == "2":
+        ask_query("CanWriteExam", person)
+
+    elif choice == "3":
+        ask_query("Student", person)
+
+    else:
+        print("Invalid choice!")
+        
